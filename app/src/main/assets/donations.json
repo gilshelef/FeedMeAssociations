@@ -1,0 +1,197 @@
+{
+
+  "donations": [
+    {
+      "type": "ירקות",
+      "imageUrl" : "http://www.camoni.co.il/cms_files/headers/header_208597.jpg",
+      "phone": "0526898380",
+      "description": "1 קילו עגבניות",
+      "firstName": "גיל",
+      "lastName": "שלף",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"1",
+      "associationId":""
+
+    },
+    {
+      "type": "מאפים",
+      "imageUrl" : "https://www.justataste.com/wp-content/uploads/2014/07/raspberry-cheese-pastries-recipe.jpg",
+      "phone": "0526898389",
+      "description": "2 מאפי גבינה",
+      "firstName": "נעמי",
+      "lastName": "צוקר",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"2",
+      "associationId":""
+
+    },
+
+    {
+      "type": "ירקות",
+      "imageUrl" : "",
+      "phone": "0526898381",
+      "description": "כל מיני ירקות",
+      "firstName": "יניב",
+      "lastName": "ליפוביצקי",
+      "date":"30.5.2010 22:15:52",
+      "available": false,
+      "id":"3",
+      "associationId":"1"
+
+    },
+
+    {
+      "type": "ירקות",
+      "imageUrl" : "http://focus.co.il/images/itempics/page_486_0.jpg",
+      "phone": "0526898382",
+      "description": "10 ברוקולי",
+      "firstName": "הדר",
+      "lastName": "אבירם",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"4",
+      "associationId":""
+
+    },
+
+    {
+      "type": "מאפים",
+      "imageUrl" : "",
+      "phone": "0526898389",
+      "description": "כל מיני בורקסים",
+      "firstName": "יניב",
+      "lastName": "ליפוביצקי",
+      "date":"30.5.2010 22:15:52",
+      "available": false,
+      "id":"5",
+      "associationId":"1"
+    },
+
+    {
+      "type": "ירקות",
+      "imageUrl" : "",
+      "phone": "0526898384",
+      "description": "כל מיני ירקות",
+      "firstName": "מור",
+      "lastName": "קריספיל",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"6",
+      "associationId":""
+
+    },
+
+    {
+      "type": "ירקות",
+      "imageUrl" : "http://www.camoni.co.il/cms_files/headers/header_208597.jpg",
+      "phone": "0526898385",
+      "description": "5 קילו עגבניות",
+      "firstName": "קים",
+      "lastName": "קארדשיין",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"7",
+      "associationId":""
+
+    },
+
+    {
+      "type": "מאפים",
+      "imageUrl" : "",
+      "phone": "0526898388",
+      "description": "עוגה",
+      "firstName": "יעל",
+      "lastName": "גורדון",
+      "date":"30.5.2010 22:15:52",
+      "available": false,
+      "id":"8",
+      "associationId":"1"
+
+    },
+
+    {
+      "type": "בגדים",
+      "imageUrl" : "",
+      "phone": "0526898389",
+      "description": "2 חולצות, 5 מכנסים",
+      "firstName": "ורד",
+      "lastName": "ליכטנברג",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"9",
+      "associationId":""
+
+    },
+
+    {
+      "type": "ירקות",
+      "imageUrl" : "http://focus.co.il/images/itempics/page_486_0.jpg",
+      "phone": "123456789",
+      "description": "3 קילו ברוקולי",
+      "firstName": "שלום",
+      "lastName": "עולם",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"10",
+      "associationId":""
+
+
+    },
+    {
+      "type": "מאפים",
+      "imageUrl" : "http://img.mako.co.il/2010/04/28/perorim_c.jpg",
+      "phone": "0526898389",
+      "description": "2 עוגות",
+      "firstName": "נעמי",
+      "lastName": "צוקר",
+      "date":"30.5.2010 22:15:52",
+      "available": false,
+      "id":"11",
+      "associationId":"1"
+
+    },
+
+    {
+      "type": "בגדים",
+      "imageUrl" : "http://www.golfwrx.com/wp-content/uploads/2014/08/Pants.jpg",
+      "phone": "123456789",
+      "description": "2 מכנסיים",
+      "firstName": "יניב",
+      "lastName": "ליפוביצקי",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"12",
+      "associationId":""
+
+    },
+    {
+      "type": "מאפים",
+      "imageUrl" : "https://www.justataste.com/wp-content/uploads/2014/07/raspberry-cheese-pastries-recipe.jpg",
+      "phone": "0526898389",
+      "description": "20 עוגות",
+      "firstName": "נעמי",
+      "lastName": "צוקר",
+      "date":"30.5.2010 22:15:52",
+      "available": false,
+      "id":"13",
+      "associationId":"1"
+
+    },
+
+    {
+      "type": "בגדים",
+      "imageUrl" : "http://www.theadairgroup.com/images/Assorted_Toddler_T_Shirts_large.jpg",
+      "phone": "123456789",
+      "description": "5 חולצות",
+      "firstName": "מיה",
+      "lastName": "שלף",
+      "date":"30.5.2010 22:15:52",
+      "available": true,
+      "id":"14",
+      "associationId":""
+
+    }
+  ]
+}
