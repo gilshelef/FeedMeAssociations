@@ -4,10 +4,10 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-public class PagerAdapter extends FragmentPagerAdapter {
-    static final int NUM_PAGES = 3;
+class PagerAdapter extends FragmentPagerAdapter {
+    private static final int NUM_PAGES = 3;
 
-    public PagerAdapter(FragmentManager fm) {
+    PagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
@@ -16,11 +16,11 @@ public class PagerAdapter extends FragmentPagerAdapter {
 
         switch (position) {
             case 0:
-                return new DonationsListFragment();
+                return new MapFragment();
             case 1:
-                return new DonationsMapFragment();
+                return new ListFragment();
             case 2:
-                return new ShoppingCartFragment();
+                return new CartFragment();
             default:
                 return null;
         }

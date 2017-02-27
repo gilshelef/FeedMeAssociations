@@ -4,6 +4,9 @@
     <color name="colorPrimaryDark">#33691E</color>
     <color name="colorAccent">#FF5722</color>
     <color name="lightPrimaryColor">#F5F5F5</color>
+    <color name="shadowPrimaryColor">#e0ececec</color>
+    <color name="lightTextColor">#e0b7b7b7</color>
+    <color name="transparentLightTextColor">#32b1b1b1</color>
     <color name="iconsUnselected">#212121</color>
     <color name="iconsSelected">#f2f2f2</color>
     <color name="black">#000000</color>

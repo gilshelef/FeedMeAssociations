@@ -3,7 +3,6 @@
     package="com.gilshelef.feedmeassociations">
 
     <uses-permission android:name="android.permission.INTERNET"/>
-
     <application
         android:allowBackup="true"
         android:icon="@mipmap/donate_icon"
@@ -17,9 +16,6 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".DonationDetailActivity">
-
         </activity>
     </application>
 

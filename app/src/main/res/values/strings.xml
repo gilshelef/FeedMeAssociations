@@ -1,9 +1,12 @@
 <resources>
     <string name="app_name">FeedMe</string>
     <string name="thumbnail">thumbnail</string>
-    <string name="available">Available</string>
+    <string name="call">Call</string>
     <string name="menu_filter">Filter</string>
     <string name="donations_tab">Donations</string>
     <string name="map_tab">Map</string>
-    <string name="shopping_cart_tab">Shopping Cart</string>
+    <string name="shopping_cart_tab">Cart</string>
+    <string name="distance" formatted="false">%.2f km</string>
+    <string name="empty" />
+
 </resources>
