@@ -68,7 +68,6 @@ abstract class DonationBaseAdapter extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 DataManager.get().saveEvent(current);
-
             }
         });
 
