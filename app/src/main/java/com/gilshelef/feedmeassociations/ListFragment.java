@@ -11,19 +11,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 /**
  * Created by gilshe on 2/22/17.
  */
 public class ListFragment extends BaseFragment {
-
-    private static final String TAG = ListFragment.class.getSimpleName();
-    private List<Donation> mDataSource;
-    private RecyclerView mRecyclerView;
-    private RecycledBaseAdapter adapter;
-    private ProgressBar progressBar;
 
 
     @Override
@@ -56,9 +49,9 @@ public class ListFragment extends BaseFragment {
         protected void onPostExecute(Integer result) {
             progressBar.setVisibility(View.GONE);
             if (result == 1) {
-                adapter = new ListAdapter(getActivity(), mDataSource, ListFragment.this);
-                AdapterManager.get().setAdapter(ListAdapter.TAG, adapter);
-                mRecyclerView.setAdapter(adapter);
+                mAdapter = new ListAdapter(getActivity(), mDataSource, ListFragment.this);
+                AdapterManager.get().setAdapter(ListAdapter.TAG, mAdapter);
+                mRecyclerView.setAdapter(mAdapter);
             } else {
                 Toast.makeText(getActivity(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
             }

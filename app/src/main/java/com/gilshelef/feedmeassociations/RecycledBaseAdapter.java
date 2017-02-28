@@ -20,8 +20,8 @@ import java.util.List;
 
 abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAdapter.ViewHolder>  {
 
-    protected List<Donation> mDataSource;
-    protected Context mContext;
+    List<Donation> mDataSource;
+    Context mContext;
     OnActionEvent mListener;
 
     RecycledBaseAdapter(Context context, List<Donation> dataSource, OnActionEvent listener) {

@@ -3,11 +3,21 @@ package com.gilshelef.feedmeassociations;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.RecyclerView;
+import android.widget.ProgressBar;
+
+import java.util.List;
 
 /**
  * Created by gilshe on 2/27/17.
  */
 abstract class BaseFragment extends Fragment implements RecycledBaseAdapter.OnActionEvent {
+    public final String TAG = this.getClass().getSimpleName();
+
+    protected List<Donation> mDataSource;
+    protected RecyclerView mRecyclerView;
+    protected RecycledBaseAdapter mAdapter;
+    protected ProgressBar progressBar;
 
     @Override
     public void onSaveEvent(Donation donation) {

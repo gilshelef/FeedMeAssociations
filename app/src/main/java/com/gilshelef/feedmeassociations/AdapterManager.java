@@ -32,6 +32,7 @@ class AdapterManager {
     void updateAll() {
         for(RecycledBaseAdapter a: adapters.values()) {
             a.updateDataSource();
+            a.notifyDataSetChanged();
         }
     }
 

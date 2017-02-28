@@ -136,7 +136,7 @@ import java.util.TreeMap;
             d.setState(Donation.State.AVAILABLE);
             saved.remove(d.getId());
         }
-        new UpdateDataTask().execute();
+        AdapterManager.get().updateAll();
     }
 
     List<Donation> getSaved() {
