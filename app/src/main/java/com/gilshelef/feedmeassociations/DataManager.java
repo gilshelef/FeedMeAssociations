@@ -89,7 +89,7 @@ import java.util.TreeMap;
         String id = donation.getId();
         if(donation.isAvailable())
             donations.put(id, donation);
-        if(donation.isOwned()) {
+        else if(donation.isOwned()) {
             donations.put(id, donation);
             saved.put(id, donation);
         }
@@ -123,16 +123,16 @@ import java.util.TreeMap;
             case "בגדים":
                 return R.drawable.list_clothes;
             default:
-                return R.drawable.list_donation;
+                return R.drawable.placeholder;
         }
     }
 
     void saveEvent(Donation d) {
-        if(d.isAvailable()) {
+        if(d.isAvailable()) { // available => saved
             d.setState(Donation.State.SAVED);
             saved.put(d.getId(), d);
         }
-        else {
+        else { // saved => available
             d.setState(Donation.State.AVAILABLE);
             saved.remove(d.getId());
         }
@@ -141,7 +141,6 @@ import java.util.TreeMap;
 
     List<Donation> getSaved() {
         return new ArrayList<>(saved.values());
-
     }
 
     List<Donation> getAll() {
@@ -157,7 +156,7 @@ import java.util.TreeMap;
         }
 
         @Override
-        protected void onPostExecute(Void result){
+        protected void onPostExecute(Void result) {
             AdapterManager.get().notifyDataSetChangeAll();
         }
     }

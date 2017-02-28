@@ -69,7 +69,7 @@ class Donation {
         return state.equals(State.AVAILABLE);
     }
 
-    public boolean isSaved() {
+    boolean isSaved() {
         return state.equals(State.SAVED);
     }
 

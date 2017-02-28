@@ -1,7 +1,6 @@
 package com.gilshelef.feedmeassociations;
 
 import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
 
 import java.util.List;
@@ -10,17 +9,17 @@ import java.util.List;
  * Created by gilshe on 2/26/17.
  */
 
-class CartAdapter extends DonationBaseAdapter{
+class CartAdapter extends RecycledBaseAdapter {
 
-    CartAdapter(Context context, List<Donation> items) {
-        mContext = context;
-        mDataSource = items;
-        mInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    static final String TAG = CartAdapter.class.getSimpleName();
+
+    CartAdapter(Context context, List<Donation> dataSource, OnActionEvent listener) {
+        super(context, dataSource, listener);
     }
 
     @Override
-    View inflateRowView() {
-        return mInflater.inflate(R.layout.list_item_donation, null);
+    int getListItemLayout() {
+        return R.layout.list_row;
     }
 
     @Override
@@ -28,10 +27,15 @@ class CartAdapter extends DonationBaseAdapter{
         mDataSource = DataManager.get().getSaved();
     }
 
-
-    // take all
-
-    // navigate
-
+    @Override
+    void setViewListeners(View view) {
+        view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                boolean selected = v.isSelected();
+                v.setSelected(!selected);
+            }
+        });
+    }
 
 }

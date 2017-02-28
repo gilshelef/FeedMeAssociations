@@ -7,7 +7,7 @@ import java.util.Map;
  * Created by gilshe on 2/26/17.
  */
 class AdapterManager {
-    private Map<String, DonationBaseAdapter> adapters;
+    private Map<String, RecycledBaseAdapter> adapters;
     private static AdapterManager instance;
 
     private AdapterManager(){
@@ -30,17 +30,17 @@ class AdapterManager {
     }
 
     void updateAll() {
-        for(DonationBaseAdapter a: adapters.values()) {
-            a.updateItems();
+        for(RecycledBaseAdapter a: adapters.values()) {
+            a.updateDataSource();
         }
     }
 
-    void setAdapter(String name, DonationBaseAdapter adapter) {
+    void setAdapter(String name, RecycledBaseAdapter adapter) {
         adapters.put(name, adapter);
     }
 
     void notifyDataSetChangeAll() {
-        for(DonationBaseAdapter a: adapters.values()) {
+        for(RecycledBaseAdapter a: adapters.values()) {
             a.notifyDataSetChanged();
         }
     }
