@@ -133,10 +133,6 @@
                 android:textSize="12sp"
                 tools:text="Contact" />
 
-
-
-
-
         </RelativeLayout>
     </RelativeLayout>
 

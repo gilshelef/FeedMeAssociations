@@ -2,7 +2,6 @@ package com.gilshelef.feedmeassociations;
 
 import android.content.Context;
 import android.location.Location;
-import android.os.AsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -10,9 +9,9 @@ import org.json.JSONObject;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Created by gilshe on 2/25/17.
@@ -20,14 +19,12 @@ import java.util.TreeMap;
  class DataManager {
 
     private Map<String, Donation> donations;
-    private Map<String, Donation> saved;
     private static DataManager instance;
     private static final String AVAILABLE = "0";
 
 
     private DataManager(){
-        donations = new TreeMap<>();
-        saved = new TreeMap<>();
+        donations = new LinkedHashMap<>();
     }
 
     static DataManager get() {
@@ -68,7 +65,9 @@ import java.util.TreeMap;
                 String state = obj.getString("state");
                 if(state.equals(AVAILABLE))
                     donation.setState(Donation.State.AVAILABLE);
-                else donation.setState(Donation.State.OWNED);
+
+                //TODO: decide initial state!
+                else donation.setState(Donation.State.SAVED);
 
                 Location l = new Location("donation's location");
                 l.setLatitude(obj.getDouble("latitude"));
@@ -87,12 +86,7 @@ import java.util.TreeMap;
 
     private void insert(Donation donation) {
         String id = donation.getId();
-        if(donation.isAvailable())
-            donations.put(id, donation);
-        else if(donation.isOwned()) {
-            donations.put(id, donation);
-            saved.put(id, donation);
-        }
+        donations.put(id, donation);
     }
 
     private String loadJsonFromAsset(String filename, Context context) {
@@ -127,37 +121,40 @@ import java.util.TreeMap;
         }
     }
 
-    void saveEvent(Donation d) {
-        if(d.isAvailable()) { // available => saved
-            d.setState(Donation.State.SAVED);
-            saved.put(d.getId(), d);
-        }
-        else { // saved => available
-            d.setState(Donation.State.AVAILABLE);
-            saved.remove(d.getId());
-        }
-        AdapterManager.get().updateAll();
-    }
-
     List<Donation> getSaved() {
-        return new ArrayList<>(saved.values());
+        List<Donation> saved = new ArrayList();
+        for(Donation d: donations.values())
+            if(!d.isAvailable()) // saved, selected, owned
+                saved.add(d);
+        return saved;
+
     }
 
     List<Donation> getAll() {
         return new ArrayList<>(donations.values());
     }
 
-    private class UpdateDataTask extends AsyncTask<Void, Void, Void>{
+    void saveEvent(String id) {
+        Donation d = donations.get(id);
+        if(d.isAvailable())  // available => saved
+            d.setState(Donation.State.SAVED);
+        else if(d.isSaved() || d.isSelected())  // saved => available
+            d.setState(Donation.State.AVAILABLE);
+        else if(d.isOwned()) // TODO: notify data base
+            d.setState(Donation.State.AVAILABLE);
 
-        @Override
-        protected Void doInBackground(Void... params) {
-            AdapterManager.get().updateAll();
-            return null;
-        }
+        AdapterManager.get().updateDataSourceAll();
+    }
 
-        @Override
-        protected void onPostExecute(Void result) {
-            AdapterManager.get().notifyDataSetChangeAll();
-        }
+    void selectedEvent(String id) {
+        Donation d = donations.get(id);
+        if(d.isSelected())
+            d.setState(Donation.State.SAVED);
+        else if(d.isSaved() || d.isAvailable())
+            d.setState(Donation.State.SELECTED);
+        else if(d.isOwned()) // TODO: notify data base
+            d.setState(Donation.State.AVAILABLE);
+
+        AdapterManager.get().updateDataSourceAll();
     }
 }

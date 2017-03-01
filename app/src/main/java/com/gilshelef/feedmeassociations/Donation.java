@@ -7,9 +7,7 @@ import android.location.Location;
  */
 class Donation {
 
-
-
-    public enum State {AVAILABLE, SAVED, OWNED}
+    enum State {AVAILABLE, SAVED, SELECTED, OWNED}
 
     String type; // donation type - vegetables, pasty etc
     String description;
@@ -71,6 +69,10 @@ class Donation {
 
     boolean isSaved() {
         return state.equals(State.SAVED);
+    }
+
+    public boolean isSelected() {
+        return state.equals(State.SELECTED);
     }
 
     public String getId() {

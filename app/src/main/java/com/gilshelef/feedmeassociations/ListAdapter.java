@@ -1,7 +1,6 @@
 package com.gilshelef.feedmeassociations;
 
 import android.content.Context;
-import android.view.View;
 
 import java.util.List;
 
@@ -10,7 +9,7 @@ import java.util.List;
  */
 class ListAdapter extends RecycledBaseAdapter {
 
-    public static final String TAG = ListAdapter.class.getSimpleName();
+    static final String TAG = ListAdapter.class.getSimpleName();
 
     ListAdapter(Context context, List<Donation> dataSource, OnActionEvent listener) {
         super(context, dataSource, listener);
@@ -24,10 +23,5 @@ class ListAdapter extends RecycledBaseAdapter {
     @Override
     void updateDataSource() {
         mDataSource = DataManager.get().getAll();
-    }
-
-    @Override
-    void setViewListeners(View view) {
-
     }
 }

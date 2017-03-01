@@ -20,13 +20,18 @@ abstract class BaseFragment extends Fragment implements RecycledBaseAdapter.OnAc
     protected ProgressBar progressBar;
 
     @Override
-    public void onSaveEvent(Donation donation) {
-        DataManager.get().saveEvent(donation);
+    public void onSaveEvent(String id) {
+        DataManager.get().saveEvent(id);
     }
 
     @Override
     public void onCallEvent(String phone) {
         Intent intent = new Intent(Intent.ACTION_DIAL, Uri.parse(phone));
         getActivity().startActivity(intent);
+    }
+
+    @Override
+    public void onSelectEvent(String id) {
+        DataManager.get().selectedEvent(id);
     }
 }

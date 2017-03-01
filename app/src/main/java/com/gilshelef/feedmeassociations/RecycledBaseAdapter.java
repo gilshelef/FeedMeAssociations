@@ -34,14 +34,14 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
     public RecycledBaseAdapter.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
         int layout = getListItemLayout();
         View view = LayoutInflater.from(viewGroup.getContext()).inflate(layout, null);
-        setViewListeners(view);
         return new ViewHolder(view);
     }
 
 
 
     @Override
-    public void onBindViewHolder(final RecycledBaseAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecycledBaseAdapter.ViewHolder holder, final int position) {
+
         final Donation donation = mDataSource.get(position);
         Transformation transformation = new RoundedTransformationBuilder()
                 .cornerRadiusDp(4)
@@ -62,15 +62,21 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
         loadDistance(donation, holder);
         loadSave(donation, holder);
+        holder.itemView.setSelected((donation.isSelected() || donation.isOwned()));
         holder.save.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                mListener.onSaveEvent(donation);
+            public void onClick(View v) {mListener.onSaveEvent(donation.getId());
             }
         });
         holder.call.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {mListener.onCallEvent(donation.getPhone());}
+        });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onSelectEvent(donation.getId());
+            }
         });
     }
 
@@ -78,7 +84,7 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
         int resource = R.drawable.take_unavailable;
         if(donation.isAvailable())
             resource = R.drawable.save;
-        else if(donation.isOwned() || donation.isSaved()) // TODO maybe change style between taken and saved
+        else if(donation.isOwned() || donation.isSaved() || donation.isSelected()) // TODO maybe change style between taken and saved
             resource = R.drawable.take_owned;
         holder.save.setImageResource(resource);
     }
@@ -96,7 +102,6 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
     abstract int getListItemLayout();
     abstract void updateDataSource();
-    abstract void setViewListeners(View view);
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
@@ -120,8 +125,9 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
     }
 
     interface OnActionEvent{
-        void onSaveEvent(Donation donation);
+        void onSaveEvent(String donationId);
         void onCallEvent(String phone);
+        void onSelectEvent(String donationId);
     }
 
 }
