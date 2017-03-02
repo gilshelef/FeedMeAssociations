@@ -22,6 +22,7 @@ class ListAdapter extends RecycledBaseAdapter {
 
     @Override
     void updateDataSource() {
-        mDataSource = DataManager.get().getAll();
+        mDataSource.clear();
+        mDataSource.addAll(DataManager.get(mContext).getAll(mContext));
     }
 }

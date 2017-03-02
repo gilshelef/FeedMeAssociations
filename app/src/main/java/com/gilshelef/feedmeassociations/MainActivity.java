@@ -2,54 +2,79 @@ package com.gilshelef.feedmeassociations;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.HashSet;
+import java.util.Set;
+
+public class MainActivity extends AppCompatActivity  implements BaseFragment.OnSelectedEvent, View.OnClickListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private final int[] TABS_TITLES = {R.string.map_tab, R.string.list_tab, R.string.saved_tab, R.string.account_tab};
+
+    private Toolbar mToolBar;
+    private TabLayout mTabLayout;
+    private ViewPager mViewPager;
+    private PagerAdapter mPagerAdapter;
+    private Menu mMenu;
+    private FloatingActionButton mFAB;
+    private SelectedDonationHandler mSelectedHandler;
+    private CoordinatorLayout mCoordinator;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Association.get(this);
+        DataManager.get(this);
+        mSelectedHandler = new SelectedDonationHandler();
+
         // set toolbar
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(getTitle(-1)); // FeedMe
-        setSupportActionBar(toolbar);
+        mToolBar = (Toolbar) findViewById(R.id.toolbar);
+        mToolBar.setTitle(getTitle(0));
+        setSupportActionBar(mToolBar);
+        mToolBar.setNavigationIcon(R.drawable.donate_icon);
 
         // set tabs
-        final TabLayout tabLayout = (TabLayout) findViewById(R.id.tab_layout);
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.map_icon).setText(getTitle(0)));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.list_icon));
-        tabLayout.addTab(tabLayout.newTab().setIcon(R.drawable.heart_icon));
-
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
+        mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.map_icon));
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.list_icon));
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.heart_icon));
+        mTabLayout.addTab(mTabLayout.newTab().setIcon(R.drawable.account_icon));
+        mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         // set viewPager and pageAdapter
-        final ViewPager viewPager = (ViewPager) findViewById(R.id.pager);
-        final PagerAdapter adapter = new PagerAdapter(getSupportFragmentManager());
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout));
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mPagerAdapter = new PagerAdapter(getSupportFragmentManager(),this);
+        mViewPager.setAdapter(mPagerAdapter);
+        mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
+        mTabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                mViewPager.setCurrentItem(tab.getPosition());
                 int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.lightPrimaryColor);
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                tab.setText(getTitle(tab.getPosition()));
+                mToolBar.setTitle(getTitle(tab.getPosition()));
+
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.iconsUnselected);
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
-                tab.setText(R.string.empty);
             }
 
             @Override
@@ -57,26 +82,24 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        //FAB
+        mFAB = (FloatingActionButton) findViewById(R.id.fab);
+        mCoordinator = (CoordinatorLayout) findViewById(R.id.coordinator);
+        mFAB.setOnClickListener(this);
     }
 
 
     private int getTitle(int position) {
-        switch (position) {
-            case 0:
-                return R.string.map_tab;
-            case 1:
-                return R.string.donations_tab;
-            case 2:
-                return R.string.shopping_cart_tab;
-            default:
-                return R.string.app_name;
-
-        }
+        if(position < TABS_TITLES.length)
+            return TABS_TITLES[position];
+        else return R.string.app_name;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.association_menu, menu);
+        this.mMenu = menu;
         return true;
     }
 
@@ -94,4 +117,109 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onSelectedEvent(String donationId, boolean selected) {
+        if(selected)
+            mSelectedHandler.selectedEvent(donationId);
+        else mSelectedHandler.unSelectEvent(donationId);
+
+    }
+
+    @Override
+    public void onClick(View v) { // fab click
+
+        Snackbar snackbar = Snackbar
+                .make(mCoordinator, "Donation taken :)", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Snackbar returned = Snackbar.make(mCoordinator, "Donations returned!", Snackbar.LENGTH_SHORT);
+                        returned.show();
+                    }});
+
+        snackbar.setCallback(new Snackbar.Callback() {
+            @Override
+            public void onDismissed(Snackbar snackbar, int event) {
+                if(event != DISMISS_EVENT_ACTION) { // take action!
+                    if (!mSelectedHandler.isEmpty()) {
+                        // TODO notify data base!
+                        // TODO add to profile
+                        // TODO add to service for timeout check
+                        DataManager.get(getApplicationContext()).remove(mSelectedHandler.getSelected());
+                    }
+                }
+                mSelectedHandler.end();
+            }
+
+        });
+        snackbar.show();
+    }
+
+    private class SelectedDonationHandler {
+
+        private int count;
+        private Set<String> selected;
+
+        SelectedDonationHandler(){
+            count = 0;
+            selected = new HashSet<>();
+
+        }
+
+        void selectedEvent(String donationId) {
+            if(isEmpty()) // first event
+                start();
+
+            count++;
+            selected.add(donationId);
+            mToolBar.setTitle(getCount());
+
+        }
+
+        void unSelectEvent(String donationId) {
+            if(isEmpty()) //unselected when there are no selected item!
+                Log.e(TAG, "unselected event when there are no selected item!");
+
+            count--;
+            selected.remove(donationId);
+            mToolBar.setTitle(getCount());
+
+            if(mSelectedHandler.isEmpty())
+                mSelectedHandler.end();
+
+        }
+
+        String getCount() {
+            return count+"";
+        }
+
+        boolean isEmpty() {
+            return count <= 0; // should always be >=0
+        }
+
+        Set<String> getSelected() {
+            return selected;
+        }
+
+        void start() {
+            Animation showFAB = AnimationUtils.loadAnimation(getApplication(), R.anim.show_fab);
+            mFAB.startAnimation(showFAB); // display fab
+            mFAB.setVisibility(View.VISIBLE);
+            mTabLayout.setVisibility(View.GONE); // hide tabs
+            mMenu.findItem(R.id.filter).setEnabled(false).setVisible(false); // hide filter
+        }
+
+        void end() {
+            Animation hideFAB = AnimationUtils.loadAnimation(getApplication(), R.anim.hide_fab);
+            mFAB.startAnimation(hideFAB); // hide fab
+            mTabLayout.setVisibility(View.VISIBLE);
+            mMenu.findItem(R.id.filter).setEnabled(true).setVisible(true); // show filter
+            count = 0;
+            selected.clear();
+            mToolBar.setTitle(getTitle(mTabLayout.getSelectedTabPosition()));
+            AdapterManager.get().clearSelectedViewAll();
+        }
+
+
+    }
 }

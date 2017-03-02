@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ProgressBar;
 
 import java.util.List;
 
@@ -17,11 +16,12 @@ abstract class BaseFragment extends Fragment implements RecycledBaseAdapter.OnAc
     protected List<Donation> mDataSource;
     protected RecyclerView mRecyclerView;
     protected RecycledBaseAdapter mAdapter;
-    protected ProgressBar progressBar;
+//    protected ProgressBar progressBar;
+
 
     @Override
     public void onSaveEvent(String id) {
-        DataManager.get().saveEvent(id);
+        DataManager.get(getActivity()).saveEvent(id);
     }
 
     @Override
@@ -31,7 +31,11 @@ abstract class BaseFragment extends Fragment implements RecycledBaseAdapter.OnAc
     }
 
     @Override
-    public void onSelectEvent(String id) {
-        DataManager.get().selectedEvent(id);
+    public void onSelectEvent(String id, boolean selected) {
+        ((OnSelectedEvent)getActivity()).onSelectedEvent(id, selected);
+    }
+
+    public interface OnSelectedEvent{
+        void onSelectedEvent(String id, boolean selected);
     }
 }

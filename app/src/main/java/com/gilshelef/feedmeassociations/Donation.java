@@ -92,4 +92,6 @@ class Donation {
     public int hashCode() {
         return id.hashCode();
     }
+
+
 }

@@ -40,9 +40,9 @@ class AdapterManager {
         adapters.put(name, adapter);
     }
 
-    void notifyDataSetChangeAll() {
+    void clearSelectedViewAll() {
         for(RecycledBaseAdapter a: adapters.values()) {
-            a.notifyDataSetChanged();
+            a.clearSelectedView();
         }
     }
 }

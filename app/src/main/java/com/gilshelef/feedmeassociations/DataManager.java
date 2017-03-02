@@ -2,6 +2,7 @@ package com.gilshelef.feedmeassociations;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.AsyncTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,37 +13,41 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by gilshe on 2/25/17.
  */
  class DataManager {
 
-    private Map<String, Donation> donations;
+    private static Map<String, Donation> donations; // holding only available and saved items
     private static DataManager instance;
     private static final String AVAILABLE = "0";
-
+    private static boolean initialized;
 
     private DataManager(){
         donations = new LinkedHashMap<>();
+        initialized = false;
     }
 
-    static DataManager get() {
+    static DataManager get(Context context) {
         if (instance == null) {
             synchronized (DataManager.class) {
                 if (instance == null)
-                    return build();
+                    return build(context);
             }
         }
         return instance;
     }
 
-    private static DataManager build() {
+    private static DataManager build(Context context) {
         instance = new DataManager();
+        new FetchDataTask(context, null).execute();
         return instance;
     }
 
-    List<Donation> getDonationsFromFile(Context context){
+    private static void getDonationsFromFile(Context context){
+        initialized = true;
         try {
             // Load data
             String jsonString = loadJsonFromAsset("donations.json", context);
@@ -65,8 +70,6 @@ import java.util.Map;
                 String state = obj.getString("state");
                 if(state.equals(AVAILABLE))
                     donation.setState(Donation.State.AVAILABLE);
-
-                //TODO: decide initial state!
                 else donation.setState(Donation.State.SAVED);
 
                 Location l = new Location("donation's location");
@@ -74,22 +77,16 @@ import java.util.Map;
                 l.setLongitude(obj.getDouble("longitude"));
                 donation.location = l;
                 donation.defaultImage = getImageByType(donation.type);
-                insert(donation);
+                String id = donation.getId();
+                DataManager.donations.put(id, donation);
 
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        return new ArrayList<>(this.donations.values());
     }
 
-    private void insert(Donation donation) {
-        String id = donation.getId();
-        donations.put(id, donation);
-    }
-
-    private String loadJsonFromAsset(String filename, Context context) {
+    private static String loadJsonFromAsset(String filename, Context context) {
         String json;
 
         try {
@@ -111,7 +108,7 @@ import java.util.Map;
     private static int getImageByType(String type) {
         switch (type){
             case "ירקות":
-                return R.drawable.list_vegetable;
+                return R.drawable.list_vegeatble;
             case "מאפים":
                 return R.drawable.list_pastry;
             case "בגדים":
@@ -121,40 +118,80 @@ import java.util.Map;
         }
     }
 
-    List<Donation> getSaved() {
-        List<Donation> saved = new ArrayList();
-        for(Donation d: donations.values())
-            if(!d.isAvailable()) // saved, selected, owned
-                saved.add(d);
+    List<Donation> getSaved(Context context) {
+        final List<Donation> saved = new ArrayList<>();
+
+        OnResult callback = new OnResult(){
+            @Override
+            public void onResult() {
+                for(Donation d: donations.values())
+                    if(d.isSaved())
+                        saved.add(d);
+            }
+        };
+
+        if(!initialized)
+            new FetchDataTask(context, callback).execute();
+
+        else callback.onResult();
         return saved;
 
     }
 
-    List<Donation> getAll() {
-        return new ArrayList<>(donations.values());
+    List<Donation> getAll(Context context) {
+        final List<Donation> all = new ArrayList<>();
+
+        OnResult callback = new OnResult(){
+            @Override
+            public void onResult() {
+                all.addAll(donations.values());
+            }
+        };
+
+        if(!initialized)
+            new FetchDataTask(context, callback).execute();
+
+        else callback.onResult();
+        return all;
     }
 
     void saveEvent(String id) {
         Donation d = donations.get(id);
         if(d.isAvailable())  // available => saved
             d.setState(Donation.State.SAVED);
-        else if(d.isSaved() || d.isSelected())  // saved => available
-            d.setState(Donation.State.AVAILABLE);
-        else if(d.isOwned()) // TODO: notify data base
+        else if(d.isSaved())  // saved => available
             d.setState(Donation.State.AVAILABLE);
 
         AdapterManager.get().updateDataSourceAll();
     }
 
-    void selectedEvent(String id) {
-        Donation d = donations.get(id);
-        if(d.isSelected())
-            d.setState(Donation.State.SAVED);
-        else if(d.isSaved() || d.isAvailable())
-            d.setState(Donation.State.SELECTED);
-        else if(d.isOwned()) // TODO: notify data base
-            d.setState(Donation.State.AVAILABLE);
-
+    void remove(Set<String> items) {
+        donations.keySet().removeAll(items);
         AdapterManager.get().updateDataSourceAll();
+    }
+
+
+    private static class FetchDataTask extends AsyncTask<String, Void, Integer> {
+        private final Context mContext;
+        private final OnResult mCallback;
+
+        FetchDataTask(Context context, OnResult callback) {
+            this.mContext = context;
+            this.mCallback = callback;
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            getDonationsFromFile(mContext);
+            if(donations.size() == 0)
+                return 0;
+            return 1; // successful
+        }
+
+        @Override
+        protected void onPostExecute(Integer result) {
+            if(mCallback != null)
+                mCallback.onResult();
+        }
     }
 }

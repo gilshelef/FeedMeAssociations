@@ -23,7 +23,8 @@ class CartAdapter extends RecycledBaseAdapter {
 
     @Override
     void updateDataSource() {
-        mDataSource = DataManager.get().getSaved();
+        mDataSource.clear();
+        mDataSource.addAll(DataManager.get(mContext).getSaved(mContext));
     }
 
 }
