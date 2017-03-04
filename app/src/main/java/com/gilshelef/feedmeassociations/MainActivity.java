@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
                 .setAction("UNDO", new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
+                        mSelectedHandler.unSelectEventAll();
                         Snackbar returned = Snackbar.make(mCoordinator, "Donations returned!", Snackbar.LENGTH_SHORT);
                         returned.show();
                     }});
@@ -145,7 +146,7 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
                         // TODO notify data base!
                         // TODO add to profile
                         // TODO add to service for timeout check
-                        DataManager.get(getApplicationContext()).remove(mSelectedHandler.getSelected());
+                        DataManager.get(getApplicationContext()).removeAll(mSelectedHandler.getSelected());
                     }
                 }
                 mSelectedHandler.end();
@@ -214,12 +215,20 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
             mFAB.startAnimation(hideFAB); // hide fab
             mTabLayout.setVisibility(View.VISIBLE);
             mMenu.findItem(R.id.filter).setEnabled(true).setVisible(true); // show filter
-            count = 0;
-            selected.clear();
             mToolBar.setTitle(getTitle(mTabLayout.getSelectedTabPosition()));
+
+            clear();
             AdapterManager.get().clearSelectedViewAll();
         }
 
+        void clear() {
+            count = 0;
+            selected.clear();
+        }
 
+        void unSelectEventAll() {
+            DataManager.get(getApplicationContext()).returnAll(getSelected());
+            clear();
+        }
     }
 }

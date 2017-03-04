@@ -4,15 +4,15 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Transformation;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ import java.util.List;
  */
 
 abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAdapter.ViewHolder>  {
-
+    private final String TAG = this.getClass().getSimpleName();
     List<Donation> mDataSource;
     Context mContext;
     OnActionEvent mListener;
@@ -59,9 +59,9 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
         selectedView = false;
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener{
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
 
-        private final Transformation mTransformation;
+        //        private final Transformation mTransformation;
         private Donation mDonation;
         private ImageView image;
         private TextView type;
@@ -75,11 +75,11 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
         ViewHolder(View view) {
             super(view);
-
-            mTransformation = new RoundedTransformationBuilder()
-                    .cornerRadiusDp(4)
-                    .oval(false)
-                    .build();
+//
+//            mTransformation = new RoundedTransformationBuilder()
+//                    .cornerRadiusDp(4)
+//                    .oval(false)
+//                    .build();
 
             this.image = (ImageView) view.findViewById(R.id.list_thumbnail);
             this.type = (TextView) view.findViewById(R.id.list_type);
@@ -95,14 +95,8 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
         void bind(Donation donation) {
             mDonation = donation;
-
-            //load donation's image
-            Picasso.with(mContext)
-                    .load(mDonation.getDefaultImage())
-                    .fit()
-                    .transform(mTransformation)
-                    .error(R.drawable.placeholder)
-                    .into(image);
+            loadSave();
+            loadSelected();
 
             //Setting text views
             type.setText(donation.getType());
@@ -114,17 +108,17 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
             String text = String.format(mContext.getString(R.string.distance), distance);
             this.distance.setText(text);
 
-            loadSave();
-            loadSelected();
-
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {mListener.onSaveEvent(mDonation.getId());
+                public void onClick(View v) {
+                    mListener.onSaveEvent(mDonation.getId());
                 }
             });
             call.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {mListener.onCallEvent(mDonation.getPhone());}
+                public void onClick(View v) {
+                    mListener.onCallEvent(mDonation.getPhone());
+                }
             });
             itemView.setOnLongClickListener(this);
             itemView.setOnClickListener(this);
@@ -132,9 +126,9 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
         private void loadSave() {
             int resource = R.drawable.take_unavailable;
-            if(mDonation.isAvailable())
+            if (mDonation.isAvailable())
                 resource = R.drawable.not_saved;
-            else if(mDonation.isSaved() || mDonation.isSelected())
+            else if (mDonation.isSaved() || mDonation.isSelected())
                 resource = R.drawable.saved;
             save.setImageResource(resource);
         }
@@ -142,7 +136,7 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
         @Override
         public boolean onLongClick(View v) {
             selectedView = true;
-            if(!mDonation.isSelected())
+            if (!mDonation.isSelected())
                 mDonation.setState(Donation.State.SELECTED);
             else mDonation.setState(Donation.State.SAVED);
 
@@ -153,40 +147,84 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
         @Override
         public void onClick(View v) {
-            if(selectedView)
+            if (selectedView)
                 onLongClick(v);
+            else showPopup(v);
         }
 
         private void setUnselected() {
             image.setImageResource(mDonation.getDefaultImage());
-            cardView.setBackgroundColor(mContext.getResources().getColor(R.color.cardview_light_background));
-            itemView.setBackgroundColor(Color.WHITE);
+            cardView.setCardBackgroundColor(Color.WHITE);
             cardSeparator.setVisibility(View.VISIBLE);
-            mDonation.setState(Donation.State.SAVED);
         }
 
         private void setSelected() {
             image.setImageResource(R.drawable.checked);
-            cardView.setBackgroundColor(Color.LTGRAY);
-            itemView.setBackgroundColor(Color.GRAY);
+            cardView.setCardBackgroundColor(Color.LTGRAY);
             cardSeparator.setVisibility(View.GONE);
         }
 
         private void loadSelected() {
-            if(mDonation.isSelected())
+            if (mDonation.isSelected())
                 setSelected();
             else setUnselected();
         }
 
+        private void showPopup(View anchorView) {
 
+            Log.i(TAG, "popup window");
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            View popupView = inflater.inflate(R.layout.popup_layout, null);
+            PopupWindow popupWindow = new PopupWindow(
+                    popupView,
+                    RecyclerView.LayoutParams.MATCH_PARENT,
+                    RecyclerView.LayoutParams.MATCH_PARENT
+            );
+
+
+            TextView type = (TextView) popupView.findViewById(R.id.popup_type);
+            TextView description = (TextView) popupView.findViewById(R.id.popup_description);
+            TextView contact = (TextView) popupView.findViewById(R.id.popup_contact);
+            ImageView thumbnail = (ImageView) popupView.findViewById(R.id.popup_thumbnail);
+            ImageView save = (ImageView) popupView.findViewById(R.id.popup_save_thumbnail);
+            ImageView call = (ImageView) popupView.findViewById(R.id.popup_call_thumbnail);
+
+            type.setText(mDonation.getType());
+            description.setText(mDonation.getDescription());
+            contact.setText(mDonation.getContactInfo());
+
+            Picasso.with(mContext)
+                    .load(mDonation.getImageUrl())
+                    .fit()
+                    .placeholder(mDonation.getDefaultImage())
+                    .into(thumbnail);
+            loadSave();
+
+            save.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onSaveEvent(mDonation.getId());
+                }
+            });
+            call.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    mListener.onCallEvent(mDonation.getPhone());
+                }
+            });
+            popupWindow.setElevation(5.0f);
+            popupWindow.setFocusable(true);
+
+
+        }
     }
-
-
-
     interface OnActionEvent {
         void onSaveEvent(String donationId);
         void onCallEvent(String phone);
         void onSelectEvent(String donationId, boolean selected);
     }
+
+
+
 
 }

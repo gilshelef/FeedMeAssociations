@@ -165,9 +165,16 @@ import java.util.Set;
         AdapterManager.get().updateDataSourceAll();
     }
 
-    void remove(Set<String> items) {
+    void removeAll(Set<String> items) {
         donations.keySet().removeAll(items);
         AdapterManager.get().updateDataSourceAll();
+    }
+
+    void returnAll(Set<String> selected) {
+        for(String id: selected)
+            donations.get(id).setState(Donation.State.SAVED);
+        AdapterManager.get().updateDataSourceAll();
+
     }
 
 
