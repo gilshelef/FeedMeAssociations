@@ -108,11 +108,11 @@ import java.util.Set;
     private static int getImageByType(String type) {
         switch (type){
             case "ירקות":
-                return R.drawable.list_vegeatble;
+                return R.drawable.ic_vegetable;
             case "מאפים":
-                return R.drawable.list_pastry;
+                return R.drawable.ic_cake;
             case "בגדים":
-                return R.drawable.list_clothes;
+                return R.drawable.ic_clothes;
             default:
                 return R.drawable.placeholder;
         }

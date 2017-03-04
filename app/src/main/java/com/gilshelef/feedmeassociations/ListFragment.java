@@ -1,11 +1,10 @@
 package com.gilshelef.feedmeassociations;
 
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.util.List;
 
 
 /**
@@ -14,46 +13,18 @@ import android.view.ViewGroup;
 public class ListFragment extends BaseFragment {
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_list, container, false);
-        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.list);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-//        progressBar = (ProgressBar) rootView.findViewById(R.id.list_progress_bar);
-        mDataSource = DataManager.get(getActivity()).getAll(getActivity());
-        mAdapter = new ListAdapter(getActivity(), mDataSource, this);
-        AdapterManager.get().setAdapter(TAG, mAdapter);
-        mRecyclerView.setAdapter(mAdapter);
-        return rootView;
+    protected RecycledBaseAdapter getAdapter() {
+        return new ListAdapter(getActivity(), mDataSource, this);
     }
 
+    @Override
+    protected List<Donation> getDataSource() {
+        return DataManager.get(getActivity()).getAll(getActivity());
+    }
 
+    @Override
+    protected View inflate(LayoutInflater inflater, ViewGroup container) {
+        return inflater.inflate(R.layout.fragment_list, container, false);
+    }
 
-//    private class FetchDataTask extends AsyncTask<String, Void, Integer> {
-//
-//        @Override
-//        protected void onPreExecute() {
-//            progressBar.setVisibility(View.VISIBLE);
-//        }
-//
-//        @Override
-//        protected Integer doInBackground(String... params) {
-//            mDataSource = new ArrayList<>();
-//            mDataSource.addAll(DataManager.get(this).getDonationsFromFile(getActivity()));
-//            if(mDataSource.size() == 0)
-//                return 0;
-//            return 1; // successful
-//        }
-//
-//        @Override
-//        protected void onPostExecute(Integer result) {
-//            progressBar.setVisibility(View.GONE);
-//            if (result == 1) {
-//                mAdapter = new ListAdapter(getActivity(), mDataSource, ListFragment.this);
-//                AdapterManager.get().setAdapter(ListAdapter.TAG, mAdapter);
-//                mRecyclerView.setAdapter(mAdapter);
-//            } else {
-//                Toast.makeText(getActivity(), "Failed to fetch data!", Toast.LENGTH_SHORT).show();
-//            }
-//        }
-//    }
 }

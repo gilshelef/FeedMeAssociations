@@ -1,11 +1,13 @@
 package com.gilshelef.feedmeassociations;
 
 import android.location.Location;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by gilshe on 2/21/17.
  */
-class Donation {
+class Donation implements Parcelable {
 
     enum State {AVAILABLE, SAVED, SELECTED, OWNED}
 
@@ -15,8 +17,8 @@ class Donation {
     String phone;
     String firstName;
     String lastName;
-    int defaultImage;
     String date;
+    int defaultImage;
     private String id; // donation id
     private State state;
     Location location;
@@ -71,7 +73,7 @@ class Donation {
         return state.equals(State.SAVED);
     }
 
-    public boolean isSelected() {
+    boolean isSelected() {
         return state.equals(State.SELECTED);
     }
 
@@ -91,6 +93,30 @@ class Donation {
     @Override
     public int hashCode() {
         return id.hashCode();
+    }
+
+
+    public static final Parcelable.Creator<Donation> CREATOR = new Creator<Donation>() {
+        public Donation createFromParcel(Parcel source) {
+            Donation mBook = new Donation();
+            mBook.type = source.readString();
+            mBook.imageUrl = source.readString();
+            mBook.defaultImage = source.readInt();
+            return mBook;
+        }
+        public Donation[] newArray(int size) {
+            return new Donation[size];
+        }
+    };
+
+    public int describeContents() {
+        return 0;
+    }
+    public void writeToParcel(Parcel parcel, int flags) {
+        parcel.writeString(type);
+        parcel.writeString(imageUrl);
+        parcel.writeInt(defaultImage);
+
     }
 
 

@@ -4,14 +4,13 @@ import android.content.Context;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -24,7 +23,7 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
     private final String TAG = this.getClass().getSimpleName();
     List<Donation> mDataSource;
     Context mContext;
-    OnActionEvent mListener;
+    private OnActionEvent mListener;
     private boolean selectedView = false;
 
 
@@ -52,16 +51,17 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
     public int getItemCount() {
         return (null != mDataSource ? mDataSource.size() : 0);
     }
-    abstract int getListItemLayout();
-    abstract void updateDataSource();
-
     void clearSelectedView(){
         selectedView = false;
     }
 
+
+    abstract int getListItemLayout();
+    abstract void updateDataSource();
+
     class ViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener, View.OnClickListener {
 
-        //        private final Transformation mTransformation;
+        private final com.squareup.picasso.Transformation mTransformation;
         private Donation mDonation;
         private ImageView image;
         private TextView type;
@@ -75,11 +75,11 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
         ViewHolder(View view) {
             super(view);
-//
-//            mTransformation = new RoundedTransformationBuilder()
-//                    .cornerRadiusDp(4)
-//                    .oval(false)
-//                    .build();
+
+            mTransformation = new RoundedTransformationBuilder()
+                    .cornerRadiusDp(4)
+                    .oval(false)
+                    .build();
 
             this.image = (ImageView) view.findViewById(R.id.list_thumbnail);
             this.type = (TextView) view.findViewById(R.id.list_type);
@@ -149,11 +149,20 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
         public void onClick(View v) {
             if (selectedView)
                 onLongClick(v);
-            else showPopup(v);
+            else
+                mListener.onClickEvent(v.findViewById(R.id.list_thumbnail), mDonation);
         }
 
         private void setUnselected() {
-            image.setImageResource(mDonation.getDefaultImage());
+            if(!mDonation.getImageUrl().isEmpty())
+                Picasso.with(mContext)
+                    .load(mDonation.getImageUrl())
+                    .fit()
+                    .transform(mTransformation)
+                    .error(mDonation.getDefaultImage())
+                    .into(image);
+
+            else image.setImageResource(mDonation.getDefaultImage());
             cardView.setCardBackgroundColor(Color.WHITE);
             cardSeparator.setVisibility(View.VISIBLE);
         }
@@ -170,58 +179,13 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
             else setUnselected();
         }
 
-        private void showPopup(View anchorView) {
-
-            Log.i(TAG, "popup window");
-            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View popupView = inflater.inflate(R.layout.popup_layout, null);
-            PopupWindow popupWindow = new PopupWindow(
-                    popupView,
-                    RecyclerView.LayoutParams.MATCH_PARENT,
-                    RecyclerView.LayoutParams.MATCH_PARENT
-            );
-
-
-            TextView type = (TextView) popupView.findViewById(R.id.popup_type);
-            TextView description = (TextView) popupView.findViewById(R.id.popup_description);
-            TextView contact = (TextView) popupView.findViewById(R.id.popup_contact);
-            ImageView thumbnail = (ImageView) popupView.findViewById(R.id.popup_thumbnail);
-            ImageView save = (ImageView) popupView.findViewById(R.id.popup_save_thumbnail);
-            ImageView call = (ImageView) popupView.findViewById(R.id.popup_call_thumbnail);
-
-            type.setText(mDonation.getType());
-            description.setText(mDonation.getDescription());
-            contact.setText(mDonation.getContactInfo());
-
-            Picasso.with(mContext)
-                    .load(mDonation.getImageUrl())
-                    .fit()
-                    .placeholder(mDonation.getDefaultImage())
-                    .into(thumbnail);
-            loadSave();
-
-            save.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.onSaveEvent(mDonation.getId());
-                }
-            });
-            call.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.onCallEvent(mDonation.getPhone());
-                }
-            });
-            popupWindow.setElevation(5.0f);
-            popupWindow.setFocusable(true);
-
-
-        }
     }
+
     interface OnActionEvent {
         void onSaveEvent(String donationId);
         void onCallEvent(String phone);
         void onSelectEvent(String donationId, boolean selected);
+        void onClickEvent(View v, Donation donation);
     }
 
 
