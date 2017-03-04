@@ -7,7 +7,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -27,7 +26,7 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
 
     private Toolbar mToolBar;
     private TabLayout mTabLayout;
-    private ViewPager mViewPager;
+    private CustomViewPager mViewPager;
     private PagerAdapter mPagerAdapter;
     private Menu mMenu;
     private FloatingActionButton mFAB;
@@ -57,7 +56,7 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
 
         // set viewPager and pageAdapter
-        mViewPager = (ViewPager) findViewById(R.id.pager);
+        mViewPager = (CustomViewPager) findViewById(R.id.pager);
         mPagerAdapter = new PagerAdapter(getSupportFragmentManager(),this);
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(mTabLayout));
@@ -68,7 +67,6 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
                 int tabIconColor = ContextCompat.getColor(getApplicationContext(), R.color.lightPrimaryColor);
                 tab.getIcon().setColorFilter(tabIconColor, PorterDuff.Mode.SRC_IN);
                 mToolBar.setTitle(getTitle(tab.getPosition()));
-
             }
 
             @Override
@@ -185,7 +183,7 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
             selected.remove(donationId);
             mToolBar.setTitle(getCount());
 
-            if(mSelectedHandler.isEmpty())
+            if(isEmpty())
                 mSelectedHandler.end();
 
         }
@@ -203,20 +201,22 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
         }
 
         void start() {
+            mViewPager.setPagingEnabled(false);
             Animation showFAB = AnimationUtils.loadAnimation(getApplication(), R.anim.show_fab);
             mFAB.startAnimation(showFAB); // display fab
             mFAB.setVisibility(View.VISIBLE);
             mTabLayout.setVisibility(View.GONE); // hide tabs
+            mViewPager.setClickable(false);
             mMenu.findItem(R.id.filter).setEnabled(false).setVisible(false); // hide filter
         }
 
         void end() {
+            mViewPager.setPagingEnabled(true);
             Animation hideFAB = AnimationUtils.loadAnimation(getApplication(), R.anim.hide_fab);
             mFAB.startAnimation(hideFAB); // hide fab
             mTabLayout.setVisibility(View.VISIBLE);
             mMenu.findItem(R.id.filter).setEnabled(true).setVisible(true); // show filter
             mToolBar.setTitle(getTitle(mTabLayout.getSelectedTabPosition()));
-
             clear();
             AdapterManager.get().clearSelectedViewAll();
         }
@@ -230,5 +230,6 @@ public class MainActivity extends AppCompatActivity  implements BaseFragment.OnS
             DataManager.get(getApplicationContext()).returnAll(getSelected());
             clear();
         }
+
     }
 }

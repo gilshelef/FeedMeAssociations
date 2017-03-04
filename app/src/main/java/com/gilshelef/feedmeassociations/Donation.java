@@ -9,7 +9,12 @@ import android.os.Parcelable;
  */
 class Donation implements Parcelable {
 
-    enum State {AVAILABLE, SAVED, SELECTED, OWNED}
+    public void setSelected(boolean val) {
+
+        selected = val;
+    }
+
+    enum State {AVAILABLE, SAVED}
 
     String type; // donation type - vegetables, pasty etc
     String description;
@@ -22,8 +27,11 @@ class Donation implements Parcelable {
     private String id; // donation id
     private State state;
     Location location;
+    private boolean selected;
 
-    Donation(){}
+    Donation(){
+        selected = false;
+    }
 
     String getType() {
         return type;
@@ -61,10 +69,6 @@ class Donation implements Parcelable {
         return location;
     }
 
-    boolean isOwned() {
-        return state.equals(State.OWNED);
-    }
-
     boolean isAvailable() {
         return state.equals(State.AVAILABLE);
     }
@@ -73,8 +77,12 @@ class Donation implements Parcelable {
         return state.equals(State.SAVED);
     }
 
-    boolean isSelected() {
-        return state.equals(State.SELECTED);
+//    boolean isSelected() {
+//        return state.equals(State.SELECTED);
+//    }
+
+    boolean isSelected(){
+        return selected;
     }
 
     public String getId() {

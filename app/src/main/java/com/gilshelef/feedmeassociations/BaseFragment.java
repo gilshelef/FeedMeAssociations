@@ -1,6 +1,5 @@
 package com.gilshelef.feedmeassociations;
 
-import android.animation.Animator;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -24,9 +23,6 @@ abstract class BaseFragment extends Fragment implements RecycledBaseAdapter.OnAc
     protected RecyclerView mRecyclerView;
     protected RecycledBaseAdapter mAdapter;
 
-    private Animator mCurrentAnimator;
-    private int mShortAnimationDuration;
-
 //    protected ProgressBar progressBar;
 
     @Override
@@ -38,11 +34,6 @@ abstract class BaseFragment extends Fragment implements RecycledBaseAdapter.OnAc
         mAdapter = getAdapter();
         AdapterManager.get().setAdapter(TAG, mAdapter);
         mRecyclerView.setAdapter(mAdapter);
-
-        // Retrieve and cache the system's default "short" animation time.
-        mShortAnimationDuration = getResources().getInteger(
-                android.R.integer.config_shortAnimTime);
-
         return rootView;
     }
 

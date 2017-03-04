@@ -172,7 +172,7 @@ import java.util.Set;
 
     void returnAll(Set<String> selected) {
         for(String id: selected)
-            donations.get(id).setState(Donation.State.SAVED);
+            donations.get(id).setSelected(false);
         AdapterManager.get().updateDataSourceAll();
 
     }

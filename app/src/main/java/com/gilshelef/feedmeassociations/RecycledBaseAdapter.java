@@ -54,8 +54,6 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
     void clearSelectedView(){
         selectedView = false;
     }
-
-
     abstract int getListItemLayout();
     abstract void updateDataSource();
 
@@ -110,14 +108,12 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
 
             save.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    mListener.onSaveEvent(mDonation.getId());
+                public void onClick(View v) {mListener.onSaveEvent(mDonation.getId());
                 }
             });
             call.setOnClickListener(new View.OnClickListener() {
                 @Override
-                public void onClick(View v) {
-                    mListener.onCallEvent(mDonation.getPhone());
+                public void onClick(View v) {mListener.onCallEvent(mDonation.getPhone());
                 }
             });
             itemView.setOnLongClickListener(this);
@@ -128,7 +124,7 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
             int resource = R.drawable.take_unavailable;
             if (mDonation.isAvailable())
                 resource = R.drawable.not_saved;
-            else if (mDonation.isSaved() || mDonation.isSelected())
+            else if (mDonation.isSaved())
                 resource = R.drawable.saved;
             save.setImageResource(resource);
         }
@@ -137,9 +133,8 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
         public boolean onLongClick(View v) {
             selectedView = true;
             if (!mDonation.isSelected())
-                mDonation.setState(Donation.State.SELECTED);
-            else mDonation.setState(Donation.State.SAVED);
-
+                mDonation.setSelected(true);
+            else mDonation.setSelected(false);
             loadSelected();
             mListener.onSelectEvent(mDonation.getId(), mDonation.isSelected());
             return true;
@@ -161,7 +156,6 @@ abstract class RecycledBaseAdapter extends  RecyclerView.Adapter<RecycledBaseAda
                     .transform(mTransformation)
                     .error(mDonation.getDefaultImage())
                     .into(image);
-
             else image.setImageResource(mDonation.getDefaultImage());
             cardView.setCardBackgroundColor(Color.WHITE);
             cardSeparator.setVisibility(View.VISIBLE);
